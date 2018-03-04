@@ -19,10 +19,34 @@ int check(int ac, char **as)
 
 int check_syntax(char *as)
 {
-	if (!(as[0] >= '0' && as[0] <= '9'))
+	int pos_begin = strlen(as) - 1;
+	int pos_end = pos_begin;
+	char *buff;
+
+	if (pos_begin < 0)
 		return (FALSE);
-	for (int i = 1; as[i]; i += 2)
-		if (as[i] != '*' || !(as[i + 1] >= '0' && as[i + 1] <= '9'))
+	while (pos_begin >= 0) {
+		pos_end = pos_begin;
+		for (; pos_begin >= 0 && as[pos_begin] != '*'; pos_begin--);
+		pos_begin++;
+		buff = strdup(as + pos_begin);
+		buff[pos_end - pos_begin + 1] = 0;
+		if (!(process_check_syntax(buff)))
+			return (FALSE);
+		pos_begin -= 2;
+		if (pos_begin == -1)
+			return (FALSE);
+	}
+	return (TRUE);
+}
+
+int process_check_syntax(char *buff)
+{
+	if (!(buff[0] >= '0' && buff[0] <= '9')
+		&& !(buff[0] == '+') && !(buff[0] == '-'))
+		return (FALSE);
+	for (int i = 1; buff[i]; i++)
+		if (!(buff[i] >= '0' && buff[i] <= '9'))
 			return (FALSE);
 	return (TRUE);
 }
